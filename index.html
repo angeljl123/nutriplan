@@ -27,7 +27,23 @@
                     }
                 }
             }
-        }
+        };
+        // Aplicar el tema guardado inmediatamente antes de renderizar el cuerpo para evitar parpadeos o reinicios
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('nutriplan_dark_mode');
+                if (savedTheme === 'true') {
+                    document.documentElement.classList.add('dark');
+                } else if (savedTheme === 'false') {
+                    document.documentElement.classList.remove('dark');
+                } else {
+                    const savedState = localStorage.getItem('minutricion_state_v3');
+                    if (savedState && JSON.parse(savedState).darkMode === true) {
+                        document.documentElement.classList.add('dark');
+                    }
+                }
+            } catch (e) {}
+        })();
     </script>
     <style>
         body {
@@ -61,13 +77,11 @@
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200">
 
-    <!-- Notificación Flotante -->
     <div id="toast" class="fixed bottom-5 right-5 left-5 sm:left-auto z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center justify-center sm:justify-start gap-2.5 px-4 py-3 rounded-xl shadow-lg bg-slate-900 dark:bg-emerald-600 text-white text-sm font-medium">
         <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 dark:text-white shrink-0"></i>
         <span id="toast-msg">Guardado correctamente</span>
     </div>
 
-    <!-- Modal de Ajustes -->
     <div id="settings-modal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl p-5 sm:p-6 space-y-5">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
@@ -120,7 +134,6 @@
         </div>
     </div>
 
-    <!-- Cabecera -->
     <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30">
         <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
@@ -146,7 +159,6 @@
         </div>
     </header>
 
-    <!-- Contenedor Principal con Pestañas de Navegación -->
     <main class="max-w-5xl mx-auto px-4 py-5 space-y-5">
         
         <!-- Barra de Pestañas (VENTANAS) -->
@@ -169,11 +181,7 @@
             </button>
         </nav>
 
-        <!-- =========================================================
-             PESTAÑA 1: CALCULADORA Y PERFIL
-             ========================================================= -->
         <section id="view-calc" class="space-y-6">
-            <!-- Tarjetas de Resumen Superior -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
                     <span class="text-xs text-slate-400 block font-medium">Calorías Objetivo</span>
@@ -197,9 +205,7 @@
                 </div>
             </div>
 
-            <!-- Formulario de Datos -->
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <!-- Datos Biométricos -->
                 <div class="md:col-span-7 bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
                     <h2 class="text-base font-bold flex items-center gap-2">
                         <i data-lucide="user" class="w-5 h-5 text-emerald-500"></i>
@@ -261,7 +267,6 @@
                     </div>
                 </div>
 
-                <!-- Reparto de Macros y Número de Comidas -->
                 <div class="md:col-span-5 bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-5 flex flex-col justify-between">
                     <div class="space-y-4">
                         <div class="flex items-center justify-between">
@@ -306,7 +311,6 @@
                 </div>
             </div>
 
-            <!-- Desglose por Comida -->
             <div class="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-sm sm:text-base font-bold">Meta orientativa por cada comida del día</h3>
@@ -316,9 +320,6 @@
             </div>
         </section>
 
-        <!-- =========================================================
-             PESTAÑA 2: SIMULADOR DE COMIDAS + CREADOR DE ALIMENTOS
-             ========================================================= -->
         <section id="view-sim" class="hidden space-y-6">
             <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-3">
@@ -372,18 +373,37 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Creador y Buscador de Alimentos -->
                 <div class="lg:col-span-5 space-y-5">
                     <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-                        <h3 class="text-sm font-bold flex items-center gap-2">
-                            <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-500"></i>
-                            Crear Alimento o Plato Propio
-                        </h3>
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-bold flex items-center gap-2">
+                                <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-500"></i>
+                                Crear Alimento o Plato Propio
+                            </h3>
+                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">Por peso (g)</span>
+                        </div>
 
                         <div class="space-y-3">
                             <div>
-                                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Nombre del alimento</label>
-                                <input type="text" id="custom-name" placeholder="Ej. Mi batido, Tortilla..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium focus:outline-none focus:border-emerald-500">
+                                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Nombre del alimento o plato</label>
+                                <input type="text" id="custom-name" placeholder="Ej. Mi batido, Tortilla, Pan proteico..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium focus:outline-none focus:border-emerald-500">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/60 dark:border-slate-700/60">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1">Macros indicados por cada:</label>
+                                    <div class="relative">
+                                        <input type="number" id="custom-ref-grams" value="100" min="1" step="1" oninput="autoCalcCustomKcal()" class="w-full pr-7 pl-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold focus:outline-none focus:border-emerald-500">
+                                        <span class="absolute right-2.5 top-1.5 text-[11px] text-slate-400 font-bold">g</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-emerald-600 dark:text-emerald-400 mb-1">Peso que vas a comer:</label>
+                                    <div class="relative">
+                                        <input type="number" id="custom-eat-grams" value="100" min="1" step="5" oninput="autoCalcCustomKcal()" class="w-full pr-7 pl-2.5 py-1.5 rounded-lg border border-emerald-500/40 bg-white dark:bg-slate-900 text-xs font-bold text-emerald-600 dark:text-emerald-400 focus:outline-none focus:border-emerald-500">
+                                        <span class="absolute right-2.5 top-1.5 text-[11px] text-emerald-500 font-bold">g</span>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="grid grid-cols-3 gap-2">
@@ -401,9 +421,14 @@
                                 </div>
                             </div>
 
+                            <div class="p-2.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 flex items-center justify-between text-[11px]">
+                                <span class="text-slate-500 dark:text-slate-400 font-medium">Total para tu ración (<strong id="custom-preview-grams">100</strong>g):</span>
+                                <span id="custom-preview-summary" class="font-bold text-emerald-600 dark:text-emerald-400">0 kcal • P:0g C:0g G:0g</span>
+                            </div>
+
                             <div class="grid grid-cols-2 gap-2 items-end">
                                 <div>
-                                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Calorías (kcal)</label>
+                                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Kcal (según peso)</label>
                                     <input type="number" id="custom-kcal" min="0" placeholder="0" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold focus:outline-none">
                                 </div>
                                 <button type="button" onclick="saveAndAddCustomFood()" class="w-full py-2 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition flex items-center justify-center gap-1.5">
@@ -437,14 +462,10 @@
                     </div>
                 </div>
 
-                <!-- Comidas Registradas -->
                 <div class="lg:col-span-7 space-y-4" id="sim-meals-container"></div>
             </div>
         </section>
 
-        <!-- =========================================================
-             PESTAÑA 3: ESCÁNER DE PLATOS CON IA
-             ========================================================= -->
         <section id="view-ai" class="hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div class="md:col-span-6 bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
@@ -519,9 +540,9 @@
                         </div>
 
                         <div class="grid grid-cols-2 gap-2.5">
-                            <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">
-                                <span class="block text-[10px] font-bold uppercase text-slate-400">Peso Estimado</span>
-                                <span id="ai-res-weight" class="text-xs font-semibold">— g</span>
+                            <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700">
+                                <label class="block text-[10px] font-bold uppercase text-slate-400">Peso del plato (g)</label>
+                                <input type="number" id="ai-res-weight-input" value="250" min="10" step="10" oninput="recalcAiMacrosByWeight(this.value)" class="w-full bg-transparent text-xs font-bold mt-0.5 focus:outline-none text-emerald-600 dark:text-emerald-400">
                             </div>
                             <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">
                                 <span class="block text-[10px] font-bold uppercase text-slate-400">Detalles</span>
@@ -541,9 +562,6 @@
             </div>
         </section>
 
-        <!-- =========================================================
-             PESTAÑA 4: CALENDARIO DE HISTORIAL
-             ========================================================= -->
         <section id="view-cal" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-7 bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
@@ -612,7 +630,6 @@
 
     </main>
 
-    <!-- Script Principal con la lógica de la App -->
     <script>
         const BASE_FOODS = [
             { id: 'f1', name: 'Pechuga de Pollo', kcal: 110, p: 23, c: 0, f: 1.5, custom: false },
@@ -646,6 +663,7 @@
         }
 
         let appState = {
+            darkMode: false,
             profile: {
                 gender: 'male',
                 age: 26,
@@ -666,11 +684,16 @@
         let calViewMonth = new Date().getMonth();
         let uploadedImageBase64 = null;
         let uploadedImageMimeType = "image/jpeg";
+        // Caché determinista para que la misma foto siempre devuelva exactamente el mismo peso y macros
+        const aiImageAnalysisCache = {};
+        let aiBasePer100g = { kcal: 0, p: 0, c: 0, f: 0 };
 
         function toggleSettingsModal(show) {
             const modal = document.getElementById('settings-modal');
+            if (!modal) return;
             if (show) {
-                document.getElementById('settings-api-key').value = localStorage.getItem('nutriplan_api_key') || '';
+                const apiKeyInput = document.getElementById('settings-api-key');
+                if (apiKeyInput) apiKeyInput.value = localStorage.getItem('nutriplan_api_key') || '';
                 modal.classList.remove('hidden');
             } else {
                 modal.classList.add('hidden');
@@ -679,58 +702,101 @@
         }
 
         function saveUserApiKey() {
-            const val = document.getElementById('settings-api-key').value.trim();
+            const val = document.getElementById('settings-api-key')?.value.trim() || '';
             localStorage.setItem('nutriplan_api_key', val);
             toggleSettingsModal(false);
             showToast(val ? 'Clave API guardada' : 'Clave eliminada');
         }
 
         function exportBackupJSON() {
-            const dataStr = JSON.stringify(appState, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `nutriplan_backup_${getTodayISO()}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast('Copia descargada');
+            try {
+                const dataStr = JSON.stringify(appState, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `nutriplan_backup_${getTodayISO()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('Copia exportada correctamente');
+            } catch (e) {
+                showToast('Error al exportar los datos');
+            }
         }
 
         function importBackupJSON(event) {
-            const file = event.target.files?.[0];
+            const file = event.target?.files?.[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function(ev) {
                 try {
-                    const imported = JSON.parse(e.target.result);
-                    if (imported && imported.profile && imported.history) {
-                        appState = imported;
+                    const parsed = JSON.parse(ev.target.result);
+                    if (parsed && typeof parsed === 'object') {
+                        appState = {
+                            ...appState,
+                            ...parsed,
+                            profile: { ...appState.profile, ...(parsed.profile || {}) }
+                        };
                         saveState();
+                        applyTheme();
                         renderAll();
                         toggleSettingsModal(false);
-                        showToast('Datos restaurados');
-                    } else {
-                        showToast('Archivo no válido');
+                        showToast('Copia de seguridad restaurada');
                     }
                 } catch (err) {
-                    showToast('Error al leer el archivo');
+                    showToast('Archivo JSON no válido');
                 }
             };
             reader.readAsText(file);
         }
 
+        function syncCurrentDateIfNeeded() {
+            const today = getTodayISO();
+            const lastOpenedDay = localStorage.getItem('nutriplan_last_opened_day');
+            if (lastOpenedDay !== today) {
+                appState.activeDate = today;
+                const now = new Date();
+                calViewYear = now.getFullYear();
+                calViewMonth = now.getMonth();
+                localStorage.setItem('nutriplan_last_opened_day', today);
+                saveState();
+                return true;
+            }
+            return false;
+        }
+
         function loadState() {
+            const today = getTodayISO();
             try {
                 const saved = localStorage.getItem('minutricion_state_v3');
                 if (saved) {
-                    appState = { ...appState, ...JSON.parse(saved) };
+                    const parsed = JSON.parse(saved);
+                    appState = {
+                        ...appState,
+                        ...parsed,
+                        profile: { ...appState.profile, ...(parsed.profile || {}) }
+                    };
                 } else {
                     seedSampleHistory();
                 }
+
+                // Sincronizar tema oscuro de forma prioritaria
+                const savedTheme = localStorage.getItem('nutriplan_dark_mode');
+                if (savedTheme !== null) {
+                    appState.darkMode = (savedTheme === 'true');
+                }
+
+                // Actualizar siempre al día actual al abrir la app
+                appState.activeDate = today;
+                const now = new Date();
+                calViewYear = now.getFullYear();
+                calViewMonth = now.getMonth();
+                localStorage.setItem('nutriplan_last_opened_day', today);
+                saveState();
             } catch (e) {
+                appState.activeDate = today;
                 seedSampleHistory();
             }
         }
@@ -738,16 +804,12 @@
         function saveState() {
             try {
                 localStorage.setItem('minutricion_state_v3', JSON.stringify(appState));
+                localStorage.setItem('nutriplan_dark_mode', String(!!appState.darkMode));
             } catch (e) {}
         }
 
         function seedSampleHistory() {
-            const now = new Date();
-            const y = now.getFullYear();
-            const m = String(now.getMonth() + 1).padStart(2, '0');
-            const todayNum = now.getDate();
             const dToday = getTodayISO();
-
             appState.history[dToday] = [
                 { uid: 301, mealIndex: 0, name: 'Copos de Avena', grams: 60, kcal: 225, p: 7.8, c: 36, f: 4.2 },
                 { uid: 302, mealIndex: 0, name: 'Plátano', grams: 110, kcal: 98, p: 1.2, c: 25, f: 0.3 },
@@ -797,18 +859,39 @@
         }
 
         function autoCalcCustomKcal() {
-            const p = parseFloat(document.getElementById('custom-p').value) || 0;
-            const c = parseFloat(document.getElementById('custom-c').value) || 0;
-            const f = parseFloat(document.getElementById('custom-f').value) || 0;
-            document.getElementById('custom-kcal').value = Math.round((p * 4) + (c * 4) + (f * 9));
+            const refGrams = Math.max(1, parseFloat(document.getElementById('custom-ref-grams')?.value) || 100);
+            const eatGrams = Math.max(1, parseFloat(document.getElementById('custom-eat-grams')?.value) || 100);
+            const pRef = parseFloat(document.getElementById('custom-p')?.value) || 0;
+            const cRef = parseFloat(document.getElementById('custom-c')?.value) || 0;
+            const fRef = parseFloat(document.getElementById('custom-f')?.value) || 0;
+
+            const ratio = eatGrams / refGrams;
+            const pEat = +(pRef * ratio).toFixed(1);
+            const cEat = +(cRef * ratio).toFixed(1);
+            const fEat = +(fRef * ratio).toFixed(1);
+            const kcalEat = Math.round((pEat * 4) + (cEat * 4) + (fEat * 9));
+
+            const kcalInput = document.getElementById('custom-kcal');
+            if (kcalInput) kcalInput.value = kcalEat;
+
+            const prevGrams = document.getElementById('custom-preview-grams');
+            if (prevGrams) prevGrams.textContent = eatGrams;
+
+            const prevSummary = document.getElementById('custom-preview-summary');
+            if (prevSummary) {
+                prevSummary.textContent = `${kcalEat} kcal • P:${pEat}g C:${cEat}g G:${fEat}g`;
+            }
         }
 
         function saveAndAddCustomFood() {
             const nameEl = document.getElementById('custom-name');
+            const refGramsEl = document.getElementById('custom-ref-grams');
+            const eatGramsEl = document.getElementById('custom-eat-grams');
             const pEl = document.getElementById('custom-p');
             const cEl = document.getElementById('custom-c');
             const fEl = document.getElementById('custom-f');
             const kcalEl = document.getElementById('custom-kcal');
+            if (!nameEl) return;
 
             const name = nameEl.value.trim();
             if (!name) {
@@ -816,42 +899,58 @@
                 return;
             }
 
-            const p = parseFloat(pEl.value) || 0;
-            const c = parseFloat(cEl.value) || 0;
-            const f = parseFloat(fEl.value) || 0;
-            const kcal = parseFloat(kcalEl.value) || Math.round((p * 4) + (c * 4) + (f * 9));
+            const refGrams = Math.max(1, parseFloat(refGramsEl?.value) || 100);
+            const eatGrams = Math.max(1, parseFloat(eatGramsEl?.value) || 100);
+            const pInput = parseFloat(pEl?.value) || 0;
+            const cInput = parseFloat(cEl?.value) || 0;
+            const fInput = parseFloat(fEl?.value) || 0;
+
+            // Normalizar a 100g para guardarlo en la base de datos de "Mis Alimentos"
+            const normFactor = 100 / refGrams;
+            const pPer100 = +(pInput * normFactor).toFixed(1);
+            const cPer100 = +(cInput * normFactor).toFixed(1);
+            const fPer100 = +(fInput * normFactor).toFixed(1);
+            const kcalPer100 = Math.round((pPer100 * 4) + (cPer100 * 4) + (fPer100 * 9));
+
+            // Calcular los macros exactos en función del peso que va a comer hoy
+            const eatFactor = eatGrams / refGrams;
+            const pEat = +(pInput * eatFactor).toFixed(1);
+            const cEat = +(cInput * eatFactor).toFixed(1);
+            const fEat = +(fInput * eatFactor).toFixed(1);
+            const kcalEat = parseFloat(kcalEl?.value) || Math.round((pEat * 4) + (cEat * 4) + (fEat * 9));
 
             const newFood = {
                 id: 'cust_' + Date.now(),
                 name,
-                kcal,
-                p,
-                c,
-                f,
+                kcal: kcalPer100,
+                p: pPer100,
+                c: cPer100,
+                f: fPer100,
                 custom: true
             };
 
             appState.customFoods.unshift(newFood);
-            const mealIndex = parseInt(document.getElementById('sim-meal-select').value, 10) || 0;
-            addFoodEntryToDay(appState.activeDate, mealIndex, name, 100, kcal, p, c, f);
+            const mealIndex = parseInt(document.getElementById('sim-meal-select')?.value, 10) || 0;
+            addFoodEntryToDay(appState.activeDate, mealIndex, name, eatGrams, Math.round(kcalEat), pEat, cEat, fEat);
 
             nameEl.value = '';
-            pEl.value = '';
-            cEl.value = '';
-            fEl.value = '';
-            kcalEl.value = '';
+            if (pEl) pEl.value = '';
+            if (cEl) cEl.value = '';
+            if (fEl) fEl.value = '';
+            if (kcalEl) kcalEl.value = '';
+            autoCalcCustomKcal();
 
             saveState();
             renderAll();
-            showToast(`"${name}" guardado y añadido`);
+            showToast(`"${name}" (${eatGrams}g) guardado y añadido`);
         }
 
         function addFoodFromList(foodId) {
             const food = getAllFoods().find(item => item.id === foodId);
             if (!food) return;
 
-            const grams = Math.max(1, parseFloat(document.getElementById('sim-grams-input').value) || 100);
-            const mealIndex = parseInt(document.getElementById('sim-meal-select').value, 10) || 0;
+            const grams = Math.max(1, parseFloat(document.getElementById('sim-grams-input')?.value) || 100);
+            const mealIndex = parseInt(document.getElementById('sim-meal-select')?.value, 10) || 0;
             const ratio = grams / 100;
 
             addFoodEntryToDay(
@@ -898,24 +997,30 @@
             appState.history[dateISO] = appState.history[dateISO].filter(item => item.uid !== uid);
             saveState();
             renderAll();
+            showToast('Alimento eliminado del día');
+        }
+
+        function changeActiveDate(newDateISO) {
+            if (!newDateISO) return;
+            appState.activeDate = newDateISO;
+            const parts = newDateISO.split('-');
+            if (parts.length === 3) {
+                calViewYear = parseInt(parts[0], 10);
+                calViewMonth = parseInt(parts[1], 10) - 1;
+            }
+            saveState();
+            renderAll();
         }
 
         function clearCurrentDayLog() {
             appState.history[appState.activeDate] = [];
             saveState();
             renderAll();
-            showToast('Día vaciado');
-        }
-
-        function changeActiveDate(dateISO) {
-            if (!dateISO) return;
-            appState.activeDate = dateISO;
-            saveState();
-            renderAll();
+            showToast('Registro del día vaciado');
         }
 
         function handleImageUpload(event) {
-            const file = event.target.files?.[0];
+            const file = event.target?.files?.[0];
             if (!file) return;
 
             uploadedImageMimeType = file.type || 'image/jpeg';
@@ -924,39 +1029,102 @@
                 const dataUrl = e.target.result;
                 uploadedImageBase64 = dataUrl.split(',')[1];
 
-                const preview = document.getElementById('ai-image-preview');
-                const placeholder = document.getElementById('ai-upload-placeholder');
-                if (preview) {
-                    preview.src = dataUrl;
-                    preview.classList.remove('hidden');
-                }
-                if (placeholder) placeholder.classList.add('hidden');
-
+                const previewEl = document.getElementById('ai-image-preview');
+                const placeholderEl = document.getElementById('ai-upload-placeholder');
                 const btnAnalyze = document.getElementById('btn-analyze-plate');
+
+                if (previewEl) {
+                    previewEl.src = dataUrl;
+                    previewEl.classList.remove('hidden');
+                }
+                if (placeholderEl) placeholderEl.classList.add('hidden');
                 if (btnAnalyze) btnAnalyze.disabled = false;
             };
             reader.readAsDataURL(file);
         }
 
         async function fetchWithRetry(url, options, retries = 3, delay = 1000) {
-            try {
-                const res = await fetch(url, options);
-                if (!res.ok && retries > 0) {
-                    await new Promise(r => setTimeout(r, delay));
-                    return fetchWithRetry(url, options, retries - 1, delay * 2);
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const res = await fetch(url, options);
+                    if (res.ok) return res;
+                } catch (err) {
+                    if (i === retries - 1) throw err;
                 }
-                return res;
-            } catch (err) {
-                if (retries > 0) {
-                    await new Promise(r => setTimeout(r, delay));
-                    return fetchWithRetry(url, options, retries - 1, delay * 2);
-                }
-                throw err;
+                await new Promise(r => setTimeout(r, delay * Math.pow(2, i)));
             }
+            return fetch(url, options);
+        }
+
+        function computeImageSignature(base64Str) {
+            if (!base64Str) return '';
+            let hash = 5381;
+            const len = base64Str.length;
+            const step = Math.max(1, Math.floor(len / 500));
+            for (let i = 0; i < len; i += step) {
+                hash = ((hash << 5) + hash) + base64Str.charCodeAt(i);
+                hash = hash & hash;
+            }
+            return `${len}_${hash}`;
+        }
+
+        function applyAiResultData(data) {
+            const nameEl = document.getElementById('ai-res-name');
+            const kcalEl = document.getElementById('ai-res-kcal');
+            const pEl = document.getElementById('ai-res-p');
+            const cEl = document.getElementById('ai-res-c');
+            const fEl = document.getElementById('ai-res-f');
+            const weightInputEl = document.getElementById('ai-res-weight-input');
+            const notesEl = document.getElementById('ai-res-notes');
+
+            const weight = Math.max(10, Math.round(data.estimatedWeightGrams || 250));
+            const kcal = Math.round(data.calories || 0);
+            const p = +(data.proteinGrams || 0).toFixed(1);
+            const c = +(data.carbsGrams || 0).toFixed(1);
+            const f = +(data.fatGrams || 0).toFixed(1);
+
+            // Guardar relación por cada 100g para permitir reajustar el peso del plato en vivo
+            aiBasePer100g = {
+                kcal: (kcal / weight) * 100,
+                p: (p / weight) * 100,
+                c: (c / weight) * 100,
+                f: (f / weight) * 100
+            };
+
+            if (nameEl) nameEl.value = data.dishName || 'Plato analizado';
+            if (weightInputEl) weightInputEl.value = weight;
+            if (kcalEl) kcalEl.value = kcal;
+            if (pEl) pEl.value = p;
+            if (cEl) cEl.value = c;
+            if (fEl) fEl.value = f;
+            if (notesEl) notesEl.textContent = data.fiberAndNotes || 'Estimación estándar';
+        }
+
+        function recalcAiMacrosByWeight(newWeightVal) {
+            const weight = Math.max(1, parseFloat(newWeightVal) || 0);
+            if (!aiBasePer100g.kcal && !aiBasePer100g.p && !aiBasePer100g.c && !aiBasePer100g.f) return;
+            const ratio = weight / 100;
+
+            const kcalEl = document.getElementById('ai-res-kcal');
+            const pEl = document.getElementById('ai-res-p');
+            const cEl = document.getElementById('ai-res-c');
+            const fEl = document.getElementById('ai-res-f');
+
+            if (kcalEl) kcalEl.value = Math.round(aiBasePer100g.kcal * ratio);
+            if (pEl) pEl.value = +(aiBasePer100g.p * ratio).toFixed(1);
+            if (cEl) cEl.value = +(aiBasePer100g.c * ratio).toFixed(1);
+            if (fEl) fEl.value = +(aiBasePer100g.f * ratio).toFixed(1);
         }
 
         async function analyzeFoodImageWithGemini() {
             if (!uploadedImageBase64) return;
+
+            const imgSignature = computeImageSignature(uploadedImageBase64);
+            if (aiImageAnalysisCache[imgSignature]) {
+                applyAiResultData(aiImageAnalysisCache[imgSignature]);
+                showToast('¡Macros extraídos con precisión!');
+                return;
+            }
 
             const loadingEl = document.getElementById('ai-loading');
             const formEl = document.getElementById('ai-result-form');
@@ -967,9 +1135,9 @@
             if (btnEl) btnEl.disabled = true;
 
             const apiKey = localStorage.getItem('nutriplan_api_key') || "";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
-            const prompt = "Analiza este plato de comida. Identifica los alimentos, estima el peso total en gramos y calcula sus macros en español.";
+            const prompt = "Actúa como un nutricionista clínico experto en pesaje visual de raciones. Analiza esta imagen de forma determinista y objetiva. Usa como referencia un plato llano estándar de 26 cm de diámetro. Calcula el peso total comestible en gramos (redondeado a múltiplos de 5g) y los macronutrientes exactos basados en tablas nutricionales USDA/BEDCA en español. Asegúrate de que las calorías coincidan exactamente con (proteínas*4 + carbohidratos*4 + grasas*9).";
 
             const payload = {
                 contents: [{
@@ -980,6 +1148,9 @@
                     ]
                 }],
                 generationConfig: {
+                    temperature: 0.0,
+                    topP: 1,
+                    topK: 1,
                     responseMimeType: "application/json",
                     responseSchema: {
                         type: "OBJECT",
@@ -1009,13 +1180,8 @@
 
                 if (rawJson) {
                     const data = JSON.parse(rawJson);
-                    document.getElementById('ai-res-name').value = data.dishName || 'Plato analizado';
-                    document.getElementById('ai-res-kcal').value = Math.round(data.calories || 0);
-                    document.getElementById('ai-res-p').value = +(data.proteinGrams || 0).toFixed(1);
-                    document.getElementById('ai-res-c').value = +(data.carbsGrams || 0).toFixed(1);
-                    document.getElementById('ai-res-f').value = +(data.fatGrams || 0).toFixed(1);
-                    document.getElementById('ai-res-weight').textContent = `${Math.round(data.estimatedWeightGrams || 250)} g aprox.`;
-                    document.getElementById('ai-res-notes').textContent = data.fiberAndNotes || 'OK';
+                    aiImageAnalysisCache[imgSignature] = data;
+                    applyAiResultData(data);
                     showToast('¡Macros extraídos con éxito!');
                 } else {
                     showToast('No se pudo leer la imagen.');
@@ -1030,17 +1196,18 @@
         }
 
         function addAiResultToDay() {
-            const name = document.getElementById('ai-res-name').value.trim() || 'Plato IA';
-            const kcal = parseFloat(document.getElementById('ai-res-kcal').value) || 0;
-            const p = parseFloat(document.getElementById('ai-res-p').value) || 0;
-            const c = parseFloat(document.getElementById('ai-res-c').value) || 0;
-            const f = parseFloat(document.getElementById('ai-res-f').value) || 0;
-            const mealIndex = parseInt(document.getElementById('ai-meal-select').value, 10) || 0;
+            const name = document.getElementById('ai-res-name')?.value.trim() || 'Plato IA';
+            const grams = Math.max(1, Math.round(parseFloat(document.getElementById('ai-res-weight-input')?.value) || 250));
+            const kcal = parseFloat(document.getElementById('ai-res-kcal')?.value) || 0;
+            const p = parseFloat(document.getElementById('ai-res-p')?.value) || 0;
+            const c = parseFloat(document.getElementById('ai-res-c')?.value) || 0;
+            const f = parseFloat(document.getElementById('ai-res-f')?.value) || 0;
+            const mealIndex = parseInt(document.getElementById('ai-meal-select')?.value, 10) || 0;
 
-            addFoodEntryToDay(appState.activeDate, mealIndex, name, 100, Math.round(kcal), p, c, f);
+            addFoodEntryToDay(appState.activeDate, mealIndex, name, grams, Math.round(kcal), p, c, f);
             saveState();
             renderAll();
-            showToast(`"${name}" añadido al día`);
+            showToast(`"${name}" (${grams}g) añadido al día`);
         }
 
         function changeCalendarMonth(delta) {
@@ -1180,7 +1347,6 @@
             const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
             const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-            setVal('header-date-picker', appState.activeDate);
             setVal('sim-date-picker', appState.activeDate);
 
             setText('top-kcal', targets.targetKcal);
@@ -1351,13 +1517,23 @@
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
-        function toggleTheme() {
+        function applyTheme() {
             const html = document.documentElement;
-            html.classList.toggle('dark');
-            const isDark = html.classList.contains('dark');
+            if (appState.darkMode) {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
             const icon = document.getElementById('theme-icon');
-            if (icon) icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            if (icon) icon.setAttribute('data-lucide', appState.darkMode ? 'sun' : 'moon');
             if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function toggleTheme() {
+            appState.darkMode = !appState.darkMode;
+            localStorage.setItem('nutriplan_dark_mode', String(!!appState.darkMode));
+            saveState();
+            applyTheme();
         }
 
         let toastTimer;
@@ -1373,8 +1549,25 @@
             }, 2500);
         }
 
+        // Detectar cuando el usuario vuelve a abrir la app desde el iPhone en un nuevo día
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                if (syncCurrentDateIfNeeded()) {
+                    renderAll();
+                }
+            }
+        });
+
+        window.addEventListener('focus', function() {
+            if (syncCurrentDateIfNeeded()) {
+                renderAll();
+            }
+        });
+
         window.onload = function() {
             loadState();
+            applyTheme();
+            autoCalcCustomKcal();
             renderAll();
             if (typeof lucide !== 'undefined') lucide.createIcons();
         };
